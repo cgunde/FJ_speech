@@ -433,7 +433,7 @@ async function transcribeAudio(blob) {
   form.append('audio', blob, 'optagelse.webm');
 
   try {
-    const res = await fetch(endpoint, { method: 'POST', body: form });
+    const res = await fetch(endpoint, { method: 'POST', body: form, headers: { 'ngrok-skip-browser-warning': 'true' } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const tekst = data.tekst ?? data.text ?? '';

@@ -18,7 +18,12 @@ model = WhisperModel(MODEL_SIZE, device=DEVICE, compute_type="int8")
 print("Klar.")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, expose_headers=["ngrok-skip-browser-warning"])
+
+@app.after_request
+def add_ngrok_header(response):
+    response.headers["ngrok-skip-browser-warning"] = "true"
+    return response
 
 @app.route("/health", methods=["GET"])
 def health():
