@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fangstdagbog</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
+
+  :root {
+    --ink:     #1a1f1c;
+    --paper:   #f0ede6;
+    --water:   #2d5a6e;
+    --water-lt:#3d7a95;
+    --reed:    #7a9e5e;
+    --sand:    #c8b98a;
+    --fog:     #e2ddd4;
+    --err:     #8b3a2a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--water);
+    color: #fff;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+  header span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    opacity: 0.6;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Layout ── */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    gap: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    main { grid-template-columns: 1fr; padding: 1rem; }
+  }
+
+  /* ── Panel ── */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .panel-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--water);
+    font-weight: 500;
+  }
+
+  /* ── Record button ── */
+  .record-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: var(--fog);
+    border-radius: 4px;
+    border: 1px solid var(--sand);
+  }
+
+  #btn-record {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--water);
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  #btn-record:hover { background: var(--fog); transform: scale(1.04); }
+  #btn-record.recording {
+    background: var(--err);
+    border-color: var(--err);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(139,58,42,0.35); }
+    50%       { box-shadow: 0 0 0 12px rgba(139,58,42,0); }
+  }
+
+  .mic-icon { transition: fill 0.15s; }
+  #btn-record.recording .mic-icon { fill: #fff; }
+
+  .record-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--water);
+    min-height: 1.2em;
+    text-align: center;
+  }
+  #btn-record.recording ~ .record-status { color: var(--err); }
+
+  /* ── Interim transcript ── */
+  #interim {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: #888;
+    min-height: 1.4em;
+    padding: 0 0.25rem;
+    font-style: italic;
+  }
+
+  /* ── Textarea ── */
+  textarea {
+    width: 100%;
+    flex: 1;
+    min-height: 220px;
+    padding: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--sand);
+    border-radius: 4px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: var(--water-lt); }
+  textarea::placeholder { color: #b0a990; }
+
+  /* ── Buttons row ── */
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  button.action {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    padding: 0.6rem 1.3rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  button.action:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+  button.action:disabled { opacity: 0.35; cursor: default; }
+
+  .btn-send    { background: var(--water);  color: #fff; }
+  .btn-clear   { background: var(--fog);    color: var(--ink); border: 1px solid var(--sand); }
+  .btn-resend  { background: var(--reed);   color: #fff; }
+
+  /* ── Settings ── */
+  .settings {
+    background: var(--fog);
+    border: 1px solid var(--sand);
+    border-radius: 4px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .settings label {
+    font-size: 0.78rem;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .settings input {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--sand);
+    border-radius: 3px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+  }
+  .settings input:focus { border-color: var(--water-lt); }
+
+  /* ── Result panel ── */
+  #result-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #result-wrap.visible { opacity: 1; }
+
+  #result-box {
+    background: #fff;
+    border: 1px solid var(--sand);
+    border-radius: 4px;
+    padding: 1.25rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    min-height: 220px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* field rows inside result */
+  .field { display: flex; gap: 0.5rem; margin-bottom: 0.35rem; }
+  .field-key {
+    color: var(--water);
+    font-weight: 500;
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+  .field-val { color: var(--ink); }
+  .field-empty { color: #aaa; font-style: italic; }
+
+  /* ── Spinner ── */
+  #spinner {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--water);
+  }
+  #spinner.active { display: flex; }
+  .dot-wave span {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--water);
+    animation: wave 1.2s ease-in-out infinite;
+  }
+  .dot-wave span:nth-child(2) { animation-delay: 0.15s; }
+  .dot-wave span:nth-child(3) { animation-delay: 0.30s; }
+  @keyframes wave {
+    0%, 60%, 100% { transform: translateY(0); }
+    30%           { transform: translateY(-6px); }
+  }
+
+  /* ── Error ── */
+  #error-msg {
+    display: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--err);
+    background: #fdf0ee;
+    border: 1px solid #e8c5be;
+    border-radius: 3px;
+    padding: 0.6rem 0.8rem;
+  }
+  #error-msg.visible { display: block; }
+
+  /* ── Raw toggle ── */
+  #raw-wrap { display: none; }
+  #raw-wrap.visible { display: block; }
+  #raw-box {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: #777;
+    background: var(--fog);
+    border: 1px solid var(--sand);
+    border-radius: 3px;
+    padding: 0.75rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-top: 0.5rem;
+  }
+  summary { cursor: pointer; font-size: 0.75rem; color: #888; user-select: none; }
+
+  /* ── Divider ── */
+  .divider {
+    width: 1px;
+    background: var(--sand);
+    align-self: stretch;
+  }
+  @media (max-width: 700px) { .divider { display: none; } }
+
+  /* waterline decoration */
+  .waterline {
+    height: 3px;
+    background: linear-gradient(90deg, var(--water) 0%, var(--water-lt) 50%, var(--reed) 100%);
+  }
+</style>
+</head>
+<body>
+
+<div class="waterline"></div>
+<header>
+  <h1>Fangstdagbog</h1>
+  <span>TALE → TEKST → DATA</span>
+</header>
+
+<main>
+  <!-- LEFT: diktering -->
+  <div class="panel">
+    <div class="panel-label">Diktering</div>
+
+    <div class="record-wrap">
+      <button id="btn-record" title="Start/stop optagelse">
+        <!-- mic SVG -->
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <rect class="mic-icon" x="9" y="2" width="6" height="12" rx="3" fill="var(--water)"/>
+          <path d="M5 11a7 7 0 0 0 14 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <line x1="12" y1="18" x2="12" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="9"  y1="22" x2="15" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="record-status" id="record-status">Tryk for at diktere</div>
+    </div>
+
+    <div id="interim"></div>
+
+    <textarea id="transcript" placeholder="Din diktering vises her — ret til hvis nødvendigt…" rows="8" spellcheck="true" lang="da"></textarea>
+
+    <div class="btn-row">
+      <button class="action btn-send" id="btn-send" disabled>Send til LLM →</button>
+      <button class="action btn-clear" id="btn-clear">Ryd</button>
+    </div>
+
+    <!-- endpoint config -->
+    <div class="settings">
+      <div class="panel-label" style="margin-bottom:0.25rem">LLM-endpoint</div>
+      <label>
+        URL
+        <input id="llm-url" type="text" value="http://localhost:11434/api/generate" />
+      </label>
+      <label>
+        Model
+        <input id="llm-model" type="text" value="llama3" />
+      </label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- RIGHT: struktureret output -->
+  <div class="panel">
+    <div class="panel-label">Struktureret fangstdata</div>
+
+    <div id="spinner">
+      <div class="dot-wave"><span></span><span></span><span></span></div>
+      Analyserer…
+    </div>
+
+    <div id="error-msg"></div>
+
+    <div id="result-wrap">
+      <div id="result-box"></div>
+      <div class="btn-row">
+        <button class="action btn-resend" id="btn-resend">Send igen</button>
+        <button class="action btn-clear" id="btn-copy">Kopiér JSON</button>
+      </div>
+      <details id="raw-wrap">
+        <summary>Rå LLM-svar</summary>
+        <div id="raw-box"></div>
+      </details>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Speech Recognition ──────────────────────────────────────────────
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const btnRecord   = document.getElementById('btn-record');
+const recStatus   = document.getElementById('record-status');
+const interimEl   = document.getElementById('interim');
+const transcriptEl= document.getElementById('transcript');
+const btnSend     = document.getElementById('btn-send');
+const btnClear    = document.getElementById('btn-clear');
+const btnResend   = document.getElementById('btn-resend');
+const btnCopy     = document.getElementById('btn-copy');
+const resultWrap  = document.getElementById('result-wrap');
+const resultBox   = document.getElementById('result-box');
+const spinner     = document.getElementById('spinner');
+const errorMsg    = document.getElementById('error-msg');
+const rawWrap     = document.getElementById('raw-wrap');
+const rawBox      = document.getElementById('raw-box');
+const llmUrl      = document.getElementById('llm-url');
+const llmModel    = document.getElementById('llm-model');
+
+let recognition = null;
+let isRecording = false;
+let lastJson    = null;
+let confirmedText = '';   // tekst fra afsluttede results
+let lastFinalIdx  = -1;   // seneste index vi har tilføjet
+
+if (!SpeechRecognition) {
+  recStatus.textContent = 'Talegenkendelse understøttes ikke i denne browser. Prøv Chrome.';
+  btnRecord.disabled = true;
+} else {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'da-DK';
+  recognition.continuous = false;      // Android håndterer continuous dårligt
+  recognition.interimResults = true;
+
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = 0; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        const t = e.results[i][0].transcript.trim();
+        confirmedText += (confirmedText ? ' ' : '') + t;
+      } else {
+        interim += e.results[i][0].transcript;
+      }
+    }
+    // Vis kun akkumuleret confirmed + nuværende interim
+    transcriptEl.value = confirmedText + (interim ? ' ' + interim : '');
+    interimEl.textContent = interim ? '…' + interim : '';
+    updateSendBtn();
+  };
+
+  recognition.onend = () => {
+    interimEl.textContent = '';
+    transcriptEl.value = confirmedText;
+    // Genstart automatisk så optagelsen fortsætter
+    if (isRecording) {
+      try { recognition.start(); } catch(_) {}
+    }
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error === 'no-speech') return;
+    stopRecording();
+    showError('Mikrofonfejl: ' + e.error);
+  };
+}
+
+btnRecord.addEventListener('click', () => {
+  if (!recognition) return;
+  isRecording ? stopRecording() : startRecording();
+});
+
+function startRecording() {
+  isRecording = true;
+  confirmedText = transcriptEl.value.trim(); // bevar evt. eksisterende tekst
+  lastFinalIdx  = -1;
+  btnRecord.classList.add('recording');
+  recStatus.textContent = 'Optager… tryk igen for at stoppe';
+  interimEl.textContent = '';
+  recognition.start();
+}
+
+function stopRecording() {
+  isRecording = false;
+  btnRecord.classList.remove('recording');
+  recStatus.textContent = 'Tryk for at diktere';
+  interimEl.textContent = '';
+  try { recognition.stop(); } catch(_) {}
+}
+
+function updateSendBtn() {
+  btnSend.disabled = transcriptEl.value.trim().length === 0;
+}
+
+transcriptEl.addEventListener('input', updateSendBtn);
+
+btnClear.addEventListener('click', () => {
+  transcriptEl.value = '';
+  confirmedText = '';
+  lastFinalIdx  = -1;
+  interimEl.textContent = '';
+  updateSendBtn();
+  hideResult();
+  hideError();
+});
+
+// ── Send to LLM ────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `Du er en fiskeridataassistent. Brugeren vil give dig en diktering af en fisketur på dansk.
+Udtræk alle relevante oplysninger og returner KUN et JSON-objekt med disse felter (sæt null hvis ikke nævnt):
+
+{
+  "dato": "YYYY-MM-DD eller beskrivelse",
+  "tidspunkt": "morgen/middag/aften/nat eller klokkeslæt",
+  "varighed_timer": tal eller null,
+  "lokalitet": "stednavn",
+  "vandtype": "hav/sø/å/fjord/andet",
+  "vejr": "beskrivelse",
+  "temperatur_c": tal eller null,
+  "vind": "retning og styrke",
+  "vandstand": "beskrivelse eller null",
+  "fangster": [
+    {
+      "art": "artsnavn",
+      "antal": tal,
+      "stoerste_cm": tal eller null,
+      "vaegt_kg": tal eller null,
+      "genuds": true/false,
+      "agn_eller_flue": "beskrivelse"
+    }
+  ],
+  "bomtur": true/false,
+  "noter": "fri tekst med øvrige detaljer"
+}
+
+Returner UDELUKKENDE JSON — ingen forklaring, ingen markdown.`;
+
+async function sendToLLM(text) {
+  showSpinner();
+  hideResult();
+  hideError();
+
+  const url   = llmUrl.value.trim();
+  const model = llmModel.value.trim();
+
+  // Build request body — works with Ollama /api/generate
+  const body = {
+    model,
+    prompt: `${SYSTEM_PROMPT}\n\nDiktering:\n${text}`,
+    stream: false,
+    options: { temperature: 0.1 }
+  };
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+
+    const data = await res.json();
+
+    // Ollama: data.response | OpenAI-compat: data.choices[0].message.content
+    const raw = data.response
+      ?? data.choices?.[0]?.message?.content
+      ?? data.choices?.[0]?.text
+      ?? JSON.stringify(data);
+
+    rawBox.textContent = raw;
+    rawWrap.classList.add('visible');
+
+    // parse JSON — strip possible markdown fences
+    const clean = raw.replace(/```json|```/gi, '').trim();
+    lastJson = JSON.parse(clean);
+    renderResult(lastJson);
+  } catch (err) {
+    showError(err.message || String(err));
+  } finally {
+    hideSpinner();
+  }
+}
+
+btnSend.addEventListener('click', () => sendToLLM(transcriptEl.value.trim()));
+btnResend.addEventListener('click', () => sendToLLM(transcriptEl.value.trim()));
+
+// ── Render ─────────────────────────────────────────────────────────
+const LABELS = {
+  dato: 'Dato', tidspunkt: 'Tidspunkt', varighed_timer: 'Varighed (t)',
+  lokalitet: 'Lokalitet', vandtype: 'Vandtype', vejr: 'Vejr',
+  temperatur_c: 'Temperatur (°C)', vind: 'Vind', vandstand: 'Vandstand',
+  bomtur: 'Bomtur', noter: 'Noter'
+};
+
+function renderResult(obj) {
+  let html = '';
+
+  // top fields
+  for (const [k, label] of Object.entries(LABELS)) {
+    const v = obj[k];
+    const isEmpty = v === null || v === undefined || v === '';
+    const display = k === 'bomtur'
+      ? (v ? 'Ja' : 'Nej')
+      : isEmpty ? '<span class="field-empty">—</span>' : escHtml(String(v));
+    html += `<div class="field"><span class="field-key">${label}</span><span class="field-val">${display}</span></div>`;
+  }
+
+  // catches
+  const fangster = obj.fangster ?? [];
+  if (fangster.length === 0) {
+    html += `<div class="field"><span class="field-key">Fangster</span><span class="field-empty">Ingen registreret</span></div>`;
+  } else {
+    html += `<div class="field"><span class="field-key">Fangster</span><span class="field-val"></span></div>`;
+    fangster.forEach((f, i) => {
+      const parts = [
+        f.art ?? '(ukendt art)',
+        f.antal != null ? `× ${f.antal}` : '',
+        f.stoerste_cm != null ? `maks ${f.stoerste_cm} cm` : '',
+        f.vaegt_kg != null ? `${f.vaegt_kg} kg` : '',
+        f.agn_eller_flue ? `(${f.agn_eller_flue})` : '',
+        f.genuds ? '↩ genudsat' : ''
+      ].filter(Boolean).join('  ');
+      html += `<div class="field" style="padding-left:1rem">
+        <span class="field-key" style="color:#666">#${i+1}</span>
+        <span class="field-val">${escHtml(parts)}</span>
+      </div>`;
+    });
+  }
+
+  resultBox.innerHTML = html;
+  resultWrap.classList.add('visible');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// copy JSON
+btnCopy.addEventListener('click', () => {
+  if (!lastJson) return;
+  navigator.clipboard.writeText(JSON.stringify(lastJson, null, 2))
+    .then(() => { btnCopy.textContent = 'Kopieret ✓'; setTimeout(() => btnCopy.textContent = 'Kopiér JSON', 2000); });
+});
+
+// ── UI helpers ─────────────────────────────────────────────────────
+function showSpinner() { spinner.classList.add('active'); }
+function hideSpinner() { spinner.classList.remove('active'); }
+function hideResult()  { resultWrap.classList.remove('visible'); rawWrap.classList.remove('visible'); }
+function showError(msg){ errorMsg.textContent = '⚠ ' + msg; errorMsg.classList.add('visible'); }
+function hideError()   { errorMsg.classList.remove('visible'); }
+</script>
+</body>
+</html>
