@@ -20,6 +20,10 @@ print("Klar.")
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
+
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
     if "audio" not in request.files:

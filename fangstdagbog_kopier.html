@@ -427,7 +427,9 @@ async function transcribeAudio(blob) {
     .replace('11434', '5000') + '/transcribe';
 
   // Brug whisper-url feltet direkte hvis det allerede peger på /transcribe
-  const endpoint = `https://sabbath-banish-silencer.ngrok-free.dev/transcribe`;
+  const endpoint = llmUrl.value.includes('transcribe')
+    ? llmUrl.value
+    : `http://192.168.8.117:5000/transcribe`;
 
   const form = new FormData();
   form.append('audio', blob, 'optagelse.webm');
