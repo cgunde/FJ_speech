@@ -1,0 +1,41 @@
+from faster_whisper import WhisperModel
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import tempfile, os
+
+# ── parametre ──────────────────────────────────────
+MODEL_SIZE = "medium"   # tiny / base / small / medium / large
+DEVICE     = "cpu"      # skift til "cuda" hvis du har Nvidia GPU
+# ──────────────────────────────────────────────────
+
+SPECIES_PROMPT = (
+    "Fisketur på dansk. Mulige arter: sortvels, tangnål, sandart, "
+    "stribefisk, havørred, hornfisk, torsk, ål, skrubbe, aborrer."
+)
+
+print("Indlæser Whisper-model…")
+model = WhisperModel(MODEL_SIZE, device=DEVICE, compute_type="int8")
+print("Klar.")
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route("/transcribe", methods=["POST"])
+def transcribe():
+    if "audio" not in request.files:
+        return jsonify({"error": "Ingen lydfil"}), 400
+
+    audio = request.files["audio"]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as f:
+        audio.save(f.name)
+        tmp = f.name
+
+    try:
+        segments, _ = model.transcribe(tmp, language="da", initial_prompt=SPECIES_PROMPT)
+        tekst = " ".join(s.text.strip() for s in segments)
+        return jsonify({"tekst": tekst})
+    finally:
+        os.remove(tmp)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
