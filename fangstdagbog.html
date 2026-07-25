@@ -37,18 +37,8 @@
     align-items: baseline;
     gap: 1rem;
   }
-  header h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.4rem;
-    letter-spacing: -0.02em;
-  }
-  header span {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    opacity: 0.6;
-    letter-spacing: 0.05em;
-  }
+  header h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; letter-spacing: -0.02em; }
+  header span { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; opacity: 0.6; letter-spacing: 0.05em; }
 
   main {
     flex: 1;
@@ -58,80 +48,55 @@
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
+  @media (max-width: 700px) { main { padding: 1rem; } }
 
-  @media (max-width: 700px) {
-    main { padding: 1rem; }
-  }
-
-  .panel-label {
+  .section-label {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--water);
     font-weight: 500;
+    margin-bottom: 0.5rem;
   }
 
+  /* ── Record ── */
   .record-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    padding: 2rem;
+    padding: 1.5rem;
     background: var(--fog);
     border-radius: 4px;
     border: 1px solid var(--sand);
   }
-
   #btn-record {
-    width: 80px;
-    height: 80px;
+    width: 72px; height: 72px;
     border-radius: 50%;
     border: 3px solid var(--water);
     background: #fff;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     transition: background 0.15s, border-color 0.15s, transform 0.1s;
-    flex-shrink: 0;
   }
   #btn-record:hover { background: var(--fog); transform: scale(1.04); }
-  #btn-record.recording {
-    background: var(--err);
-    border-color: var(--err);
-    animation: pulse 1.2s ease-in-out infinite;
-  }
+  #btn-record.recording { background: var(--err); border-color: var(--err); animation: pulse 1.2s ease-in-out infinite; }
   @keyframes pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(139,58,42,0.35); }
     50%       { box-shadow: 0 0 0 12px rgba(139,58,42,0); }
   }
   .mic-icon { transition: fill 0.15s; }
   #btn-record.recording .mic-icon { fill: #fff; }
-
-  .record-status {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--water);
-    min-height: 1.2em;
-    text-align: center;
-  }
-
-  #interim {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.8rem;
-    color: #888;
-    min-height: 1.4em;
-    padding: 0 0.25rem;
-    font-style: italic;
-  }
+  .record-status { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--water); text-align: center; }
+  #interim { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: #888; min-height: 1.2em; font-style: italic; }
 
   textarea {
     width: 100%;
-    min-height: 220px;
-    padding: 1rem;
+    min-height: 120px;
+    padding: 0.85rem;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.85rem;
     line-height: 1.65;
@@ -141,16 +106,121 @@
     border-radius: 4px;
     resize: vertical;
     outline: none;
-    transition: border-color 0.15s;
   }
   textarea:focus { border-color: var(--water-lt); }
   textarea::placeholder { color: #b0a990; }
 
-  .btn-row {
+  /* ── Form fields ── */
+  .fields {
     display: flex;
+    flex-direction: column;
     gap: 0.75rem;
-    flex-wrap: wrap;
+    background: #fff;
+    border: 1px solid var(--sand);
+    border-radius: 4px;
+    padding: 1rem;
   }
+
+  .field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .field-row label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--water);
+  }
+
+  .field-row input,
+  .field-row select {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--sand);
+    border-radius: 3px;
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+  }
+  .field-row input:focus,
+  .field-row select:focus { border-color: var(--water-lt); background: #fff; }
+
+  .field-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  /* ── Fangster ── */
+  .catch-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .catch-item {
+    display: grid;
+    grid-template-columns: 1fr 80px auto auto;
+    gap: 0.5rem;
+    align-items: center;
+    background: var(--fog);
+    border: 1px solid var(--sand);
+    border-radius: 3px;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .catch-item input,
+  .catch-item select {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--sand);
+    border-radius: 3px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+  }
+
+  .catch-item .genuds-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+
+  .btn-remove {
+    background: none;
+    border: none;
+    color: var(--err);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+    opacity: 0.6;
+  }
+  .btn-remove:hover { opacity: 1; }
+
+  .btn-add-catch {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    padding: 0.5rem 1rem;
+    background: var(--fog);
+    border: 1px dashed var(--sand);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--water);
+    width: 100%;
+    text-align: left;
+  }
+  .btn-add-catch:hover { background: #fff; }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
   button.action {
     font-family: 'Syne', sans-serif;
@@ -166,9 +236,10 @@
   button.action:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
   button.action:disabled { opacity: 0.35; cursor: default; }
 
-  .btn-send  { background: var(--water); color: #fff; }
-  .btn-clear { background: var(--fog); color: var(--ink); border: 1px solid var(--sand); }
+  .btn-primary { background: var(--water); color: #fff; }
+  .btn-secondary { background: var(--fog); color: var(--ink); border: 1px solid var(--sand); }
 
+  /* ── Error ── */
   #error-msg {
     display: none;
     font-family: 'IBM Plex Mono', monospace;
@@ -184,6 +255,20 @@
     height: 3px;
     background: linear-gradient(90deg, var(--water) 0%, var(--water-lt) 50%, var(--reed) 100%);
   }
+
+  .catch-header {
+    display: grid;
+    grid-template-columns: 1fr 80px auto auto;
+    gap: 0.5rem;
+    padding: 0 0.75rem;
+  }
+  .catch-header span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999;
+  }
 </style>
 </head>
 <body>
@@ -195,43 +280,101 @@
 </header>
 
 <main>
-  <div class="panel-label">Diktering</div>
 
-  <div class="record-wrap">
-    <button id="btn-record" title="Start/stop optagelse">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-        <rect class="mic-icon" x="9" y="2" width="6" height="12" rx="3" fill="var(--water)"/>
-        <path d="M5 11a7 7 0 0 0 14 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-        <line x1="12" y1="18" x2="12" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="9"  y1="22" x2="15" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <div class="record-status" id="record-status">Tryk for at diktere</div>
+  <!-- ── Diktering ── -->
+  <div>
+    <div class="section-label">Diktering</div>
+    <div class="record-wrap">
+      <button id="btn-record" title="Start/stop optagelse">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <rect class="mic-icon" x="9" y="2" width="6" height="12" rx="3" fill="var(--water)"/>
+          <path d="M5 11a7 7 0 0 0 14 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <line x1="12" y1="18" x2="12" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="9"  y1="22" x2="15" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="record-status" id="record-status">Tryk for at diktere</div>
+    </div>
+    <div id="interim" style="margin-top:0.5rem"></div>
+    <textarea id="transcript" placeholder="Din diktering vises her — ret til hvis nødvendigt…" style="margin-top:0.5rem" spellcheck="true" lang="da"></textarea>
+    <div class="btn-row" style="margin-top:0.75rem">
+      <button class="action btn-primary" id="btn-parse" disabled>Udfyld felter</button>
+    </div>
+    <div id="parse-status" style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--reed);margin-top:0.25rem"></div>
   </div>
 
-  <div id="interim"></div>
+  <!-- ── Turdata ── -->
+  <div>
+    <div class="section-label">Turdata</div>
+    <div class="fields">
+      <div class="field-two">
+        <div class="field-row">
+          <label>Dato</label>
+          <input type="date" id="dato">
+        </div>
+        <div class="field-row">
+          <label>Varighed (timer)</label>
+          <input type="number" id="varighed" min="0" step="0.5" placeholder="f.eks. 2">
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Sted</label>
+        <input type="text" id="sted" placeholder="f.eks. Vedbæk">
+      </div>
+      <div class="field-two">
+        <div class="field-row">
+          <label>Målart</label>
+          <input type="text" id="maalart" placeholder="f.eks. havørred">
+        </div>
+        <div class="field-row">
+          <label>Fisket med</label>
+          <input type="text" id="fisket-med" placeholder="f.eks. blink">
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <textarea id="transcript" placeholder="Din diktering vises her — ret til hvis nødvendigt…" rows="8" spellcheck="true" lang="da"></textarea>
+  <!-- ── Fangster ── -->
+  <div>
+    <div class="section-label">Fangster</div>
+    <div class="catch-header">
+      <span>Art</span>
+      <span>Længde (cm)</span>
+      <span>Genuds.</span>
+      <span></span>
+    </div>
+    <div class="catch-list" id="catch-list"></div>
+    <button class="btn-add-catch" id="btn-add-catch" style="margin-top:0.5rem">+ Tilføj fisk</button>
+  </div>
 
+  <!-- ── Handlinger ── -->
   <div class="btn-row">
-    <button class="action btn-send" id="btn-send" disabled>Kopiér tekst</button>
-    <button class="action btn-clear" id="btn-clear">Ryd</button>
+    <button class="action btn-primary" id="btn-copy">Kopiér data</button>
+    <button class="action btn-secondary" id="btn-clear">Ryd alt</button>
   </div>
 
   <div id="error-msg"></div>
+
 </main>
 
 <script>
 const WHISPER_URL = 'https://sabbath-banish-silencer.ngrok-free.dev/transcribe';
 
+// ── DOM ─────────────────────────────────────────────────────────────
 const btnRecord   = document.getElementById('btn-record');
 const recStatus   = document.getElementById('record-status');
 const interimEl   = document.getElementById('interim');
 const transcriptEl= document.getElementById('transcript');
-const btnSend     = document.getElementById('btn-send');
+const btnCopy     = document.getElementById('btn-copy');
 const btnClear    = document.getElementById('btn-clear');
+const btnAddCatch = document.getElementById('btn-add-catch');
+const catchList   = document.getElementById('catch-list');
 const errorMsg    = document.getElementById('error-msg');
 
+// Sæt dato til i dag
+document.getElementById('dato').value = new Date().toISOString().split('T')[0];
+
+// ── Recording ───────────────────────────────────────────────────────
 let mediaRecorder = null;
 let audioChunks   = [];
 let isRecording   = false;
@@ -247,17 +390,11 @@ async function startRecording() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioChunks = [];
     mediaRecorder = new MediaRecorder(stream);
-
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) audioChunks.push(e.data);
-    };
-
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
     mediaRecorder.onstop = async () => {
       stream.getTracks().forEach(t => t.stop());
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      await transcribeAudio(blob);
+      await transcribeAudio(new Blob(audioChunks, { type: 'audio/webm' }));
     };
-
     mediaRecorder.start();
     isRecording = true;
     btnRecord.classList.add('recording');
@@ -286,19 +423,15 @@ function stopRecording() {
 async function transcribeAudio(blob) {
   const form = new FormData();
   form.append('audio', blob, 'optagelse.webm');
-
   try {
     const res = await fetch(WHISPER_URL, {
-      method: 'POST',
-      body: form,
+      method: 'POST', body: form,
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const tekst = data.tekst ?? data.text ?? '';
-    transcriptEl.value = (transcriptEl.value.trim()
-      ? transcriptEl.value.trim() + ' ' : '') + tekst.trim();
-    updateSendBtn();
+    transcriptEl.value = (transcriptEl.value.trim() ? transcriptEl.value.trim() + ' ' : '') + tekst.trim();
     recStatus.textContent = 'Tryk for at diktere';
     interimEl.textContent = '✓ Transskriberet';
     setTimeout(() => { interimEl.textContent = ''; }, 2000);
@@ -308,28 +441,114 @@ async function transcribeAudio(blob) {
   }
 }
 
-function updateSendBtn() {
-  btnSend.disabled = transcriptEl.value.trim().length === 0;
+// ── Udfyld felter ───────────────────────────────────────────────────
+const btnParse   = document.getElementById('btn-parse');
+const parseStatus= document.getElementById('parse-status');
+
+transcriptEl.addEventListener('input', () => {
+  btnParse.disabled = transcriptEl.value.trim().length === 0;
+});
+
+btnParse.addEventListener('click', async () => {
+  const tekst = transcriptEl.value.trim();
+  if (!tekst) return;
+  parseStatus.textContent = 'Fortolker…';
+  btnParse.disabled = true;
+  try {
+    const res = await fetch(WHISPER_URL.replace('/transcribe', '/parse'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+      body: JSON.stringify({ tekst })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data.sted)       document.getElementById('sted').value     = data.sted;
+    if (data.varighed_timer != null) document.getElementById('varighed').value  = data.varighed_timer;
+    if (data.maalart)    document.getElementById('maalart').value  = data.maalart;
+    if (data.fisket_med) document.getElementById('fisket-med').value = data.fisket_med;
+
+    if (data.fangster && data.fangster.length > 0) {
+      catchList.innerHTML = '';
+      data.fangster.forEach(f => addCatch(f.art ?? '', f.laengde_cm ?? '', f.genuds ?? false));
+    }
+
+    parseStatus.textContent = '✓ Felter udfyldt';
+    setTimeout(() => { parseStatus.textContent = ''; }, 3000);
+  } catch (err) {
+    showError('Parse-fejl: ' + err.message);
+    parseStatus.textContent = '';
+  } finally {
+    btnParse.disabled = false;
+  }
+});
+
+// ── Fangster ────────────────────────────────────────────────────────
+let catchCount = 0;
+
+function addCatch(art = '', laengde = '', genuds = false) {
+  catchCount++;
+  const id = catchCount;
+  const div = document.createElement('div');
+  div.className = 'catch-item';
+  div.dataset.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Art" value="${art}" class="catch-art">
+    <input type="number" placeholder="cm" min="0" value="${laengde}" class="catch-laengde">
+    <label class="genuds-label">
+      <input type="checkbox" class="catch-genuds" ${genuds ? 'checked' : ''}> G
+    </label>
+    <button class="btn-remove" title="Fjern">×</button>
+  `;
+  div.querySelector('.btn-remove').addEventListener('click', () => div.remove());
+  catchList.appendChild(div);
 }
 
-transcriptEl.addEventListener('input', updateSendBtn);
+btnAddCatch.addEventListener('click', () => addCatch());
+
+// ── Kopiér / ryd ────────────────────────────────────────────────────
+btnCopy.addEventListener('click', () => {
+  const fangster = [];
+  catchList.querySelectorAll('.catch-item').forEach(item => {
+    fangster.push({
+      art:     item.querySelector('.catch-art').value.trim(),
+      laengde_cm: parseFloat(item.querySelector('.catch-laengde').value) || null,
+      genuds:  item.querySelector('.catch-genuds').checked
+    });
+  });
+
+  const data = {
+    dato:       document.getElementById('dato').value,
+    sted:       document.getElementById('sted').value.trim(),
+    varighed_timer: parseFloat(document.getElementById('varighed').value) || null,
+    maalart:    document.getElementById('maalart').value.trim(),
+    fisket_med: document.getElementById('fisket-med').value,
+    nultur:     fangster.length === 0,
+    fangster,
+    diktering:  transcriptEl.value.trim()
+  };
+
+  navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+    .then(() => {
+      btnCopy.textContent = 'Kopieret ✓';
+      setTimeout(() => { btnCopy.textContent = 'Kopiér data'; }, 2000);
+    })
+    .catch(() => showError('Kunne ikke kopiere'));
+});
 
 btnClear.addEventListener('click', () => {
   transcriptEl.value = '';
   interimEl.textContent = '';
-  updateSendBtn();
+  document.getElementById('dato').value = new Date().toISOString().split('T')[0];
+  document.getElementById('sted').value = '';
+  document.getElementById('varighed').value = '';
+  document.getElementById('maalart').value = '';
+  document.getElementById('fisket-med').value = '';
+  catchList.innerHTML = '';
   hideError();
 });
 
-btnSend.addEventListener('click', () => {
-  navigator.clipboard.writeText(transcriptEl.value.trim())
-    .then(() => {
-      btnSend.textContent = 'Kopieret ✓';
-      setTimeout(() => { btnSend.textContent = 'Kopiér tekst'; }, 2000);
-    })
-    .catch(() => showError('Kunne ikke kopiere — prøv manuelt'));
-});
-
+// ── Helpers ─────────────────────────────────────────────────────────
 function showError(msg) { errorMsg.textContent = '⚠ ' + msg; errorMsg.style.display = 'block'; }
 function hideError()    { errorMsg.style.display = 'none'; }
 </script>

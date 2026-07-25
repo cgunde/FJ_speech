@@ -1,7 +1,7 @@
 from faster_whisper import WhisperModel
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import tempfile, os
+import tempfile, os, json, requests
 
 # ── parametre ──────────────────────────────────────
 MODEL_SIZE = "medium"   # tiny / base / small / medium / large
@@ -11,10 +11,10 @@ DEVICE     = "cpu"      # skift til "cuda" hvis du har Nvidia GPU
 SPECIES_PROMPT = (
     "Fisketur på dansk. "
     "Lokaliteter: Vedbæk, Skovshoved, Nivå, Faxe. "
-    "Arter: stribefisk, havørred, hornfisk, torsk, ål, skrubbe, rødspætte. "
-    "Fisket med: blink, bombarda, gulp, flue, orm, levende agn, tungevindue. "
+    "Arter: sortvels, tangnål, sandart, stribefisk, stribet fløjfisk, havørred, hornfisk, torsk, ål, skrubbe, aborre. "
+    "Fisket med: blink, bombarda, gulp, flue, orm, spinneflue. "
     "Eksempler: fanget en havørred på 52 cm fisket med blink i to timer ved Vedbæk, "
-    "fisket med gulp efter skrubbe og rødspætte ved Nivå, nultur ved Skovshoved fisket med bombarda i en time efter havørred."
+    "fisket med gulp efter sandart ved Nivå, nultur ved Skovshoved fisket med bombarda i en time."
 )
 
 print("Indlæser Whisper-model…")
@@ -49,6 +49,46 @@ def transcribe():
         return jsonify({"tekst": tekst})
     finally:
         os.remove(tmp)
+
+PARSE_PROMPT = """Du er en fiskeridataassistent. Udtræk følgende fra dikteringen og returner KUN JSON:
+
+{
+  "sted": "stednavn eller null",
+  "varighed_timer": tal eller null,
+  "maalart": "art eller null",
+  "fisket_med": "redskab eller null",
+  "fangster": [
+    {"art": "navn", "laengde_cm": tal eller null, "genuds": true/false}
+  ]
+}
+
+Returner UDELUKKENDE JSON — ingen forklaring, ingen markdown."""
+
+@app.route("/parse", methods=["POST"])
+def parse():
+    data = request.get_json()
+    if not data or "tekst" not in data:
+        return jsonify({"error": "Ingen tekst"}), 400
+
+    tekst = data["tekst"]
+
+    try:
+        res = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "mistral:7b-instruct",
+                "prompt": f"{PARSE_PROMPT}\n\nDiktering: {tekst}",
+                "stream": False,
+                "options": {"temperature": 0.1}
+            },
+            timeout=60
+        )
+        raw = res.json().get("response", "")
+        clean = raw.replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(clean)
+        return jsonify(parsed)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
