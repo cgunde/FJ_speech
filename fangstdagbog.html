@@ -432,6 +432,7 @@ async function transcribeAudio(blob) {
     const data = await res.json();
     const tekst = data.tekst ?? data.text ?? '';
     transcriptEl.value = (transcriptEl.value.trim() ? transcriptEl.value.trim() + ' ' : '') + tekst.trim();
+    btnParse.disabled = transcriptEl.value.trim().length === 0;
     recStatus.textContent = 'Tryk for at diktere';
     interimEl.textContent = '✓ Transskriberet';
     setTimeout(() => { interimEl.textContent = ''; }, 2000);
