@@ -9,8 +9,12 @@ DEVICE     = "cpu"      # skift til "cuda" hvis du har Nvidia GPU
 # ──────────────────────────────────────────────────
 
 SPECIES_PROMPT = (
-    "Fisketur på dansk. Mulige arter: sortvels, tangnål, sandart, "
-    "stribefisk, havørred, hornfisk, torsk, ål, skrubbe, aborrer."
+    "Fisketur på dansk. "
+    "Lokaliteter: Vedbæk, Skovshoved, Nivå, Faxe. "
+    "Arter: stribefisk, havørred, hornfisk, torsk, ål, skrubbe, rødspætte. "
+    "Fisket med: blink, bombarda, gulp, flue, orm, levende agn, tungevindue. "
+    "Eksempler: fanget en havørred på 52 cm fisket med blink i to timer ved Vedbæk, "
+    "fisket med gulp efter skrubbe og rødspætte ved Nivå, nultur ved Skovshoved fisket med bombarda i en time efter havørred."
 )
 
 print("Indlæser Whisper-model…")
