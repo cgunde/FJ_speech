@@ -71,21 +71,32 @@ def parse():
         return jsonify({"error": "Ingen tekst"}), 400
 
     tekst = data["tekst"]
+    prompt = f"{PARSE_PROMPT}\n\nDiktering: {tekst}"
+    prompt_tokens = len(prompt.split())
+
+    print(f"── Parse request ──")
+    print(f"  Prompt størrelse: ~{prompt_tokens} ord / ~{len(prompt)} tegn")
 
     try:
+        import time
+        t0 = time.time()
         res = requests.post(
             "http://localhost:11434/api/generate",
             json={
                 "model": "mistral:7b-instruct",
-                "prompt": f"{PARSE_PROMPT}\n\nDiktering: {tekst}",
+                "prompt": prompt,
                 "stream": False,
                 "options": {"temperature": 0.1}
             },
             timeout=60
         )
+        elapsed = time.time() - t0
         raw = res.json().get("response", "")
+        print(f"  Svartid: {elapsed:.1f}s")
+        print(f"  LLM svar: {raw}")
         clean = raw.replace("```json", "").replace("```", "").strip()
         parsed = json.loads(clean)
+        parsed["_meta"] = {"prompt_ord": prompt_tokens, "svartid_s": round(elapsed, 1)}
         return jsonify(parsed)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

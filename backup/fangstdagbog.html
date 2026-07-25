@@ -474,8 +474,8 @@ btnParse.addEventListener('click', async () => {
       data.fangster.forEach(f => addCatch(f.art ?? '', f.laengde_cm ?? '', f.genuds ?? false));
     }
 
-    parseStatus.textContent = `✓ Felter udfyldt — ${data._meta ? data._meta.svartid_s + 's · ' + data._meta.prompt_ord + ' ord i prompt' : ''}`;
-    setTimeout(() => { parseStatus.textContent = ''; }, 6000);
+    parseStatus.textContent = '✓ Felter udfyldt';
+    setTimeout(() => { parseStatus.textContent = ''; }, 3000);
   } catch (err) {
     showError('Parse-fejl: ' + err.message);
     parseStatus.textContent = '';
