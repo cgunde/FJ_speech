@@ -361,6 +361,10 @@
     <!-- Diktering -->
     <div>
       <div class="section-label">Diktering</div>
+      <p style="font-size:0.82rem;color:#666;line-height:1.55;margin-bottom:0.75rem">
+        Skriv eller dikter information om din fisketur. Eksempel:<br>
+        <em style="color:#888">Jeg har fisket 3 timer efter havørred med blink, jeg har fanget to — en på 40 cm og en på 50 cm, begge genudsat.</em>
+      </p>
       <div class="record-wrap">
         <button id="btn-record" title="Start/stop optagelse">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -418,8 +422,9 @@
     </div>
 
     <!-- Handlinger -->
+    <p style="font-size:0.78rem;color:#888;font-family:'IBM Plex Mono',monospace">Send når tekst og felter matcher</p>
     <div class="btn-row">
-      <button class="action btn-primary" id="btn-copy">Kopiér data</button>
+      <button class="action btn-primary" id="btn-email">Send via email</button>
       <button class="action btn-secondary" id="btn-clear">Ryd alt</button>
     </div>
 
@@ -622,8 +627,8 @@ function addCatch(art = '', laengde = '', genuds = false) {
 
 btnAddCatch.addEventListener('click', () => addCatch());
 
-// ── Kopiér ──────────────────────────────────────────────────────────
-btnCopy.addEventListener('click', () => {
+// ── Byg data-objekt ─────────────────────────────────────────────────
+function buildData() {
   const fangster = [];
   catchList.querySelectorAll('.catch-item').forEach(item => {
     fangster.push({
@@ -632,8 +637,7 @@ btnCopy.addEventListener('click', () => {
       genuds:     item.querySelector('.catch-genuds').checked
     });
   });
-
-  const data = {
+  return {
     dato:           document.getElementById('dato').value,
     koordinater,
     varighed_timer: parseFloat(document.getElementById('varighed').value) || null,
@@ -643,13 +647,33 @@ btnCopy.addEventListener('click', () => {
     fangster,
     diktering:      transcriptEl.value.trim()
   };
+}
 
-  navigator.clipboard.writeText(JSON.stringify(data, null, 2))
-    .then(() => {
-      btnCopy.textContent = 'Kopieret ✓';
-      setTimeout(() => { btnCopy.textContent = 'Kopiér data'; }, 2000);
-    })
-    .catch(() => showError('Kunne ikke kopiere'));
+function buildTekst(data) {
+  const fangstTekst = data.fangster.length === 0
+    ? 'Nultur'
+    : data.fangster.map(f =>
+        `${f.art}${f.laengde_cm ? ' ' + f.laengde_cm + ' cm' : ''}${f.genuds ? ' (genudsat)' : ''}`
+      ).join(', ');
+  return [
+    `Dato: ${data.dato}`,
+    `Koordinater: ${data.koordinater ? data.koordinater.lat + ', ' + data.koordinater.lng : '—'}`,
+    `Varighed: ${data.varighed_timer ?? '—'} timer`,
+    `Målart: ${data.maalart || '—'}`,
+    `Fisket med: ${data.fisket_med || '—'}`,
+    `Fangster: ${fangstTekst}`,
+    ``,
+    `Diktering: ${data.diktering}`
+  ].join('\n');
+}
+
+// ── Email ────────────────────────────────────────────────────────────
+document.getElementById('btn-email').addEventListener('click', () => {
+  const data = buildData();
+  const tekst = buildTekst(data);
+  const subject = encodeURIComponent(`Fangsttur ${data.dato}${data.maalart ? ' — ' + data.maalart : ''}`);
+  const body = encodeURIComponent(tekst);
+  window.location.href = `mailto:cgun@aqua.dtu.dk?subject=${subject}&body=${body}`;
 });
 
 // ── Ryd ─────────────────────────────────────────────────────────────
