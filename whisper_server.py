@@ -44,8 +44,12 @@ def transcribe():
         tmp = f.name
 
     try:
+        import time
+        t0 = time.time()
         segments, _ = model.transcribe(tmp, language="da", initial_prompt=SPECIES_PROMPT)
         tekst = " ".join(s.text.strip() for s in segments)
+        elapsed = time.time() - t0
+        print(f"  Whisper svartid: {elapsed:.1f}s")
         return jsonify({"tekst": tekst})
     finally:
         os.remove(tmp)

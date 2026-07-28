@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fangstdagbog</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
 
@@ -62,66 +61,6 @@
     font-weight: 500;
     margin-bottom: 0.5rem;
   }
-
-  /* ── Kort ── */
-  #map {
-    height: 300px;
-    border-radius: 4px;
-    border: 1px solid var(--sand);
-  }
-
-  .map-btn-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-gps {
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 0.5rem 1rem;
-    background: var(--water);
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .btn-gps:hover { opacity: 0.85; }
-  .btn-gps:disabled { opacity: 0.45; cursor: default; }
-
-  .btn-clear-pin {
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 0.5rem 1rem;
-    background: var(--fog);
-    color: var(--ink);
-    border: 1px solid var(--sand);
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  .btn-clear-pin:hover { background: #fff; }
-
-  #koordinat-display {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--reed);
-    margin-top: 0.4rem;
-    min-height: 1.2em;
-  }
-
-  /* ── Form section — skjult indtil pin er sat ── */
-  #form-section {
-    display: none;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  #form-section.visible { display: flex; }
 
   /* ── Record ── */
   .record-wrap {
@@ -182,7 +121,11 @@
     padding: 1rem;
   }
 
-  .field-row { display: flex; flex-direction: column; gap: 0.25rem; }
+  .field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 
   .field-row label {
     font-family: 'IBM Plex Mono', monospace;
@@ -192,7 +135,8 @@
     color: var(--water);
   }
 
-  .field-row input {
+  .field-row input,
+  .field-row select {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem;
@@ -203,26 +147,17 @@
     outline: none;
     width: 100%;
   }
-  .field-row input:focus { border-color: var(--water-lt); background: #fff; }
+  .field-row input:focus,
+  .field-row select:focus { border-color: var(--water-lt); background: #fff; }
 
   .field-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 
   /* ── Fangster ── */
-  .catch-header {
-    display: grid;
-    grid-template-columns: 1fr 80px auto auto;
+  .catch-list {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    padding: 0 0.75rem;
   }
-  .catch-header span {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #999;
-  }
-
-  .catch-list { display: flex; flex-direction: column; gap: 0.5rem; }
 
   .catch-item {
     display: grid;
@@ -235,7 +170,8 @@
     padding: 0.5rem 0.75rem;
   }
 
-  .catch-item input {
+  .catch-item input,
+  .catch-item select {
     font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
     padding: 0.35rem 0.5rem;
@@ -280,11 +216,10 @@
     color: var(--water);
     width: 100%;
     text-align: left;
-    margin-top: 0.5rem;
   }
   .btn-add-catch:hover { background: #fff; }
 
-  /* ── Knapper ── */
+  /* ── Buttons ── */
   .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
   button.action {
@@ -301,16 +236,10 @@
   button.action:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
   button.action:disabled { opacity: 0.35; cursor: default; }
 
-  .btn-primary   { background: var(--water); color: #fff; }
+  .btn-primary { background: var(--water); color: #fff; }
   .btn-secondary { background: var(--fog); color: var(--ink); border: 1px solid var(--sand); }
 
-  #parse-status {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--reed);
-    min-height: 1.2em;
-  }
-
+  /* ── Error ── */
   #error-msg {
     display: none;
     font-family: 'IBM Plex Mono', monospace;
@@ -326,6 +255,20 @@
     height: 3px;
     background: linear-gradient(90deg, var(--water) 0%, var(--water-lt) 50%, var(--reed) 100%);
   }
+
+  .catch-header {
+    display: grid;
+    grid-template-columns: 1fr 80px auto auto;
+    gap: 0.5rem;
+    padding: 0 0.75rem;
+  }
+  .catch-header span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999;
+  }
 </style>
 </head>
 <body>
@@ -338,163 +281,97 @@
 
 <main>
 
-  <!-- ── Kort ── -->
+  <!-- ── Diktering ── -->
   <div>
-    <div class="section-label">Fiskested</div>
-    <div id="map"></div>
-    <div class="map-btn-row">
-      <button class="btn-gps" id="btn-gps">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-          <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="none"/>
+    <div class="section-label">Diktering</div>
+    <div class="record-wrap">
+      <button id="btn-record" title="Start/stop optagelse">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <rect class="mic-icon" x="9" y="2" width="6" height="12" rx="3" fill="var(--water)"/>
+          <path d="M5 11a7 7 0 0 0 14 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <line x1="12" y1="18" x2="12" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="9"  y1="22" x2="15" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        Min position
       </button>
-      <button class="btn-clear-pin" id="btn-clear-pin" style="display:none">Fjern pin</button>
+      <div class="record-status" id="record-status">Tryk for at diktere</div>
     </div>
-    <div id="koordinat-display"></div>
+    <div id="interim" style="margin-top:0.5rem"></div>
+    <textarea id="transcript" placeholder="Din diktering vises her — ret til hvis nødvendigt…" style="margin-top:0.5rem" spellcheck="true" lang="da"></textarea>
+    <div class="btn-row" style="margin-top:0.75rem">
+      <button class="action btn-primary" id="btn-parse" disabled>Udfyld felter</button>
+    </div>
+    <div id="parse-status" style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--reed);margin-top:0.25rem"></div>
   </div>
 
-  <!-- ── Form (vises når pin er sat) ── -->
-  <div id="form-section">
-
-    <!-- Diktering -->
-    <div>
-      <div class="section-label">Diktering</div>
-      <div class="record-wrap">
-        <button id="btn-record" title="Start/stop optagelse">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <rect class="mic-icon" x="9" y="2" width="6" height="12" rx="3" fill="var(--water)"/>
-            <path d="M5 11a7 7 0 0 0 14 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-            <line x1="12" y1="18" x2="12" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="9"  y1="22" x2="15" y2="22" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <div class="record-status" id="record-status">Tryk for at diktere</div>
-      </div>
-      <div id="interim" style="margin-top:0.5rem"></div>
-      <textarea id="transcript" placeholder="Din diktering vises her — ret til hvis nødvendigt…" style="margin-top:0.5rem" spellcheck="true" lang="da"></textarea>
-      <div class="btn-row" style="margin-top:0.75rem">
-        <button class="action btn-primary" id="btn-parse" disabled>Udfyld felter</button>
-      </div>
-      <div id="parse-status" style="margin-top:0.25rem"></div>
-    </div>
-
-    <!-- Turdata -->
-    <div>
-      <div class="section-label">Turdata</div>
-      <div class="fields">
-        <div class="field-two">
-          <div class="field-row">
-            <label>Dato</label>
-            <input type="date" id="dato">
-          </div>
-          <div class="field-row">
-            <label>Varighed (timer)</label>
-            <input type="number" id="varighed" min="0" step="0.5" placeholder="f.eks. 2">
-          </div>
+  <!-- ── Turdata ── -->
+  <div>
+    <div class="section-label">Turdata</div>
+    <div class="fields">
+      <div class="field-two">
+        <div class="field-row">
+          <label>Dato</label>
+          <input type="date" id="dato">
         </div>
-        <div class="field-two">
-          <div class="field-row">
-            <label>Målart</label>
-            <input type="text" id="maalart" placeholder="f.eks. havørred">
-          </div>
-          <div class="field-row">
-            <label>Fisket med</label>
-            <input type="text" id="fisket-med" placeholder="f.eks. blink">
-          </div>
+        <div class="field-row">
+          <label>Varighed (timer)</label>
+          <input type="number" id="varighed" min="0" step="0.5" placeholder="f.eks. 2">
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Sted</label>
+        <input type="text" id="sted" placeholder="f.eks. Vedbæk">
+      </div>
+      <div class="field-two">
+        <div class="field-row">
+          <label>Målart</label>
+          <input type="text" id="maalart" placeholder="f.eks. havørred">
+        </div>
+        <div class="field-row">
+          <label>Fisket med</label>
+          <input type="text" id="fisket-med" placeholder="f.eks. blink">
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Fangster -->
-    <div>
-      <div class="section-label">Fangster</div>
-      <div class="catch-header">
-        <span>Art</span><span>Længde (cm)</span><span>Genuds.</span><span></span>
-      </div>
-      <div class="catch-list" id="catch-list"></div>
-      <button class="btn-add-catch" id="btn-add-catch">+ Tilføj fisk</button>
+  <!-- ── Fangster ── -->
+  <div>
+    <div class="section-label">Fangster</div>
+    <div class="catch-header">
+      <span>Art</span>
+      <span>Længde (cm)</span>
+      <span>Genuds.</span>
+      <span></span>
     </div>
+    <div class="catch-list" id="catch-list"></div>
+    <button class="btn-add-catch" id="btn-add-catch" style="margin-top:0.5rem">+ Tilføj fisk</button>
+  </div>
 
-    <!-- Handlinger -->
-    <div class="btn-row">
-      <button class="action btn-primary" id="btn-copy">Kopiér data</button>
-      <button class="action btn-secondary" id="btn-clear">Ryd alt</button>
-    </div>
+  <!-- ── Handlinger ── -->
+  <div class="btn-row">
+    <button class="action btn-primary" id="btn-copy">Kopiér data</button>
+    <button class="action btn-secondary" id="btn-clear">Ryd alt</button>
+  </div>
 
-    <div id="error-msg"></div>
-
-  </div><!-- /form-section -->
+  <div id="error-msg"></div>
 
 </main>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const WHISPER_URL = 'https://sabbath-banish-silencer.ngrok-free.dev/transcribe';
 
-// ── Kort ────────────────────────────────────────────────────────────
-const map = L.map('map').setView([56.0, 10.5], 6);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap'
-}).addTo(map);
-
-let marker = null;
-let koordinater = null;
-
-function setPin(lat, lng) {
-  koordinater = { lat: parseFloat(lat.toFixed(5)), lng: parseFloat(lng.toFixed(5)) };
-  if (marker) marker.setLatLng([lat, lng]);
-  else marker = L.marker([lat, lng]).addTo(map);
-  map.setView([lat, lng], 13);
-  document.getElementById('koordinat-display').textContent =
-    `📍 ${koordinater.lat}, ${koordinater.lng}`;
-  document.getElementById('btn-clear-pin').style.display = 'inline-block';
-  document.getElementById('form-section').classList.add('visible');
-}
-
-map.on('click', (e) => setPin(e.latlng.lat, e.latlng.lng));
-
-document.getElementById('btn-gps').addEventListener('click', () => {
-  const btn = document.getElementById('btn-gps');
-  btn.disabled = true;
-  btn.textContent = 'Finder position…';
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setPin(pos.coords.latitude, pos.coords.longitude);
-      btn.disabled = false;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Min position`;
-    },
-    (err) => {
-      showError('GPS fejl: ' + err.message);
-      btn.disabled = false;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Min position`;
-    },
-    { enableHighAccuracy: true, timeout: 10000 }
-  );
-});
-
-document.getElementById('btn-clear-pin').addEventListener('click', () => {
-  if (marker) { map.removeLayer(marker); marker = null; }
-  koordinater = null;
-  document.getElementById('koordinat-display').textContent = '';
-  document.getElementById('btn-clear-pin').style.display = 'none';
-  document.getElementById('form-section').classList.remove('visible');
-});
-
-// ── DOM refs ────────────────────────────────────────────────────────
+// ── DOM ─────────────────────────────────────────────────────────────
 const btnRecord   = document.getElementById('btn-record');
 const recStatus   = document.getElementById('record-status');
 const interimEl   = document.getElementById('interim');
 const transcriptEl= document.getElementById('transcript');
-const btnParse    = document.getElementById('btn-parse');
-const parseStatus = document.getElementById('parse-status');
 const btnCopy     = document.getElementById('btn-copy');
 const btnClear    = document.getElementById('btn-clear');
 const btnAddCatch = document.getElementById('btn-add-catch');
 const catchList   = document.getElementById('catch-list');
 const errorMsg    = document.getElementById('error-msg');
 
+// Sæt dato til i dag
 document.getElementById('dato').value = new Date().toISOString().split('T')[0];
 
 // ── Recording ───────────────────────────────────────────────────────
@@ -566,6 +443,9 @@ async function transcribeAudio(blob) {
 }
 
 // ── Udfyld felter ───────────────────────────────────────────────────
+const btnParse   = document.getElementById('btn-parse');
+const parseStatus= document.getElementById('parse-status');
+
 transcriptEl.addEventListener('input', () => {
   btnParse.disabled = transcriptEl.value.trim().length === 0;
 });
@@ -584,16 +464,17 @@ btnParse.addEventListener('click', async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
+    if (data.sted)       document.getElementById('sted').value     = data.sted;
     if (data.varighed_timer != null) document.getElementById('varighed').value  = data.varighed_timer;
-    if (data.maalart)                document.getElementById('maalart').value   = data.maalart;
-    if (data.fisket_med)             document.getElementById('fisket-med').value= data.fisket_med;
+    if (data.maalart)    document.getElementById('maalart').value  = data.maalart;
+    if (data.fisket_med) document.getElementById('fisket-med').value = data.fisket_med;
 
     if (data.fangster && data.fangster.length > 0) {
       catchList.innerHTML = '';
       data.fangster.forEach(f => addCatch(f.art ?? '', f.laengde_cm ?? '', f.genuds ?? false));
     }
 
-    parseStatus.textContent = `✓ Felter udfyldt${data._meta ? ' — ' + data._meta.svartid_s + 's · ' + data._meta.prompt_ord + ' ord' : ''}`;
+    parseStatus.textContent = `✓ Felter udfyldt — ${data._meta ? data._meta.svartid_s + 's · ' + data._meta.prompt_ord + ' ord i prompt' : ''}`;
     setTimeout(() => { parseStatus.textContent = ''; }, 6000);
   } catch (err) {
     showError('Parse-fejl: ' + err.message);
@@ -608,12 +489,16 @@ let catchCount = 0;
 
 function addCatch(art = '', laengde = '', genuds = false) {
   catchCount++;
+  const id = catchCount;
   const div = document.createElement('div');
   div.className = 'catch-item';
+  div.dataset.id = id;
   div.innerHTML = `
     <input type="text" placeholder="Art" value="${art}" class="catch-art">
     <input type="number" placeholder="cm" min="0" value="${laengde}" class="catch-laengde">
-    <label class="genuds-label"><input type="checkbox" class="catch-genuds" ${genuds ? 'checked' : ''}> G</label>
+    <label class="genuds-label">
+      <input type="checkbox" class="catch-genuds" ${genuds ? 'checked' : ''}> G
+    </label>
     <button class="btn-remove" title="Fjern">×</button>
   `;
   div.querySelector('.btn-remove').addEventListener('click', () => div.remove());
@@ -622,26 +507,26 @@ function addCatch(art = '', laengde = '', genuds = false) {
 
 btnAddCatch.addEventListener('click', () => addCatch());
 
-// ── Kopiér ──────────────────────────────────────────────────────────
+// ── Kopiér / ryd ────────────────────────────────────────────────────
 btnCopy.addEventListener('click', () => {
   const fangster = [];
   catchList.querySelectorAll('.catch-item').forEach(item => {
     fangster.push({
-      art:        item.querySelector('.catch-art').value.trim(),
+      art:     item.querySelector('.catch-art').value.trim(),
       laengde_cm: parseFloat(item.querySelector('.catch-laengde').value) || null,
-      genuds:     item.querySelector('.catch-genuds').checked
+      genuds:  item.querySelector('.catch-genuds').checked
     });
   });
 
   const data = {
-    dato:           document.getElementById('dato').value,
-    koordinater,
+    dato:       document.getElementById('dato').value,
+    sted:       document.getElementById('sted').value.trim(),
     varighed_timer: parseFloat(document.getElementById('varighed').value) || null,
-    maalart:        document.getElementById('maalart').value.trim(),
-    fisket_med:     document.getElementById('fisket-med').value.trim(),
-    nultur:         fangster.length === 0,
+    maalart:    document.getElementById('maalart').value.trim(),
+    fisket_med: document.getElementById('fisket-med').value,
+    nultur:     fangster.length === 0,
     fangster,
-    diktering:      transcriptEl.value.trim()
+    diktering:  transcriptEl.value.trim()
   };
 
   navigator.clipboard.writeText(JSON.stringify(data, null, 2))
@@ -652,12 +537,11 @@ btnCopy.addEventListener('click', () => {
     .catch(() => showError('Kunne ikke kopiere'));
 });
 
-// ── Ryd ─────────────────────────────────────────────────────────────
 btnClear.addEventListener('click', () => {
   transcriptEl.value = '';
   interimEl.textContent = '';
-  btnParse.disabled = true;
   document.getElementById('dato').value = new Date().toISOString().split('T')[0];
+  document.getElementById('sted').value = '';
   document.getElementById('varighed').value = '';
   document.getElementById('maalart').value = '';
   document.getElementById('fisket-med').value = '';
